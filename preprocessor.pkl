@@ -41,6 +41,3 @@ preprocessor = ColumnTransformer([
 # Fit the preprocessor
 preprocessor.fit(X)
 
-# Save it
-joblib.dump(preprocessor, "preprocessor.pkl")
-print("✅ Saved preprocessor.pkl")
