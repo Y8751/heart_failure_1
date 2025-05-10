@@ -13,7 +13,7 @@ from tensorflow.keras.models import load_model
 try:
     preprocessor = joblib.load("preprocessor_fixed.pkl")
 except FileNotFoundError:
-    st.error("❌ Preprocessor file not found. Please ensure 'preprocessor.pkl' is in the directory.")
+    st.error("❌ Preprocessor file not found. Please ensure 'preprocessor_fixed.pkl' is in the directory.")
     st.stop()
 except Exception as e:
     st.error(f"❌ Error loading preprocessor: {e}")
@@ -61,19 +61,30 @@ def preprocess_data(df):
 # ==============================
 @st.cache_resource
 def load_models():
+    models = {}
     try:
-        models = {
-            'XGBoost': joblib.load("XGBoost_model.pkl"),
-            'SVM': joblib.load("SVM_model.pkl"),
-            'Random Forest': joblib.load("Random_Forest_model.pkl"),
-            'Keras Neural Network': load_model("keras_model.h5"),
-        }
-    except FileNotFoundError as e:
-        st.error(f"❌ Model file not found: {e.filename}")
-        st.stop()
+        models['XGBoost'] = joblib.load("XGBoost_model.pkl")
     except Exception as e:
-        st.error(f"❌ Error loading models: {e}")
+        st.error(f"❌ Failed to load XGBoost_model.pkl: {e}")
+
+    try:
+        models['SVM'] = joblib.load("SVM_model.pkl")
+    except Exception as e:
+        st.error(f"❌ Failed to load SVM_model.pkl: {e}")
+
+    try:
+        models['Random Forest'] = joblib.load("Random_Forest_model.pkl")
+    except Exception as e:
+        st.error(f"❌ Failed to load Random_Forest_model.pkl: {e}")
+
+    try:
+        models['Keras Neural Network'] = load_model("keras_model.h5")
+    except Exception as e:
+        st.error(f"❌ Failed to load keras_model.h5: {e}")
+
+    if not models:
         st.stop()
+
     return models
 
 # ==============================
