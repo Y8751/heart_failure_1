@@ -3,9 +3,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_heart_disease_dataset  # افترض وجود مجموعة بيانات
 import joblib
 
-# مثال: بيانات
-X, y = ...  # بياناتك بعد المعالجة
-
 # تقسيم البيانات
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
