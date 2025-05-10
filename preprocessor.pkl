@@ -1,41 +1,5 @@
 X = df.drop('HeartDisease', axis=1)
 y = df['HeartDisease']
 
-# Extract numerical and categorical features
-num_features = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
-cat_features = X.select_dtypes(include=['object']).columns.tolist()
-
-# Function to remove outliers using IQR method
-def remove_outliers_iqr(data, columns, multiplier=1.5):
-    df_clean = data.copy()
-    for col in columns:
-        Q1 = df_clean[col].quantile(0.25)
-        Q3 = df_clean[col].quantile(0.75)
-        IQR = Q3 - Q1
-        lower_bound = Q1 - multiplier * IQR
-        upper_bound = Q3 + multiplier * IQR
-        df_clean = df_clean[(df_clean[col] >= lower_bound) & (df_clean[col] <= upper_bound)]
-    return df_clean
-
-# Clean data by removing outliers
-df_clean = remove_outliers_iqr(df, num_features)
-
-# Define the numeric and categorical pipelines
-numeric_pipeline = Pipeline([
-    ('scaler', StandardScaler()),
-    ('power', PowerTransformer())
-])
-
-categorical_pipeline = Pipeline([
-    ('imputer', SimpleImputer(strategy='most_frequent')),
-    ('encoder', OneHotEncoder(handle_unknown='ignore'))
-])
-
-# Define the column transformer for preprocessing
-preprocessor = ColumnTransformer([
-    ('num', numeric_pipeline, num_features),
-    ('cat', categorical_pipeline, cat_features)
-])
-
 # Example of applying the preprocessor
 X_processed = preprocessor.fit_transform(X)
