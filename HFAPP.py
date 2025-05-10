@@ -11,7 +11,7 @@ from tensorflow.keras.models import load_model
 # Load Preprocessor
 # ==============================
 try:
-    preprocessor = joblib.load("preprocessor.pkl")
+    preprocessor = joblib.load("preprocessor_fixed.pkl")
 except FileNotFoundError:
     st.error("❌ Preprocessor file not found. Please ensure 'preprocessor.pkl' is in the directory.")
     st.stop()
