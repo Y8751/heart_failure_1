@@ -7,24 +7,36 @@ from sklearn.pipeline import Pipeline
 # Load your full training dataset (the one used in model training)
 df = pd.read_csv("heart.csv")
 
-# Split features/target
 X = df.drop('HeartDisease', axis=1)
+y = df['HeartDisease']
 
-# Detect column types
-num_cols = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
-cat_cols = X.select_dtypes(include=['object', 'category', 'bool']).columns.tolist()
+num_features = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
+cat_features = X.select_dtypes(include=['object']).columns.tolist()
 
-# Define preprocessing for numeric and categorical columns
-num_transformer = StandardScaler()
-cat_transformer = OneHotEncoder(handle_unknown='ignore')
+def remove_outliers_iqr(data, columns, multiplier=1.5):
+    df_clean = data.copy()
+    for col in columns:
+        Q1 = df_clean[col].quantile(0.25)
+        Q3 = df_clean[col].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - multiplier * IQR
+        upper_bound = Q3 + multiplier * IQR
+        df_clean = df_clean[(df_clean[col] >= lower_bound) & (df_clean[col] <= upper_bound)]
+    return df_clean
+numeric_pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('power', PowerTransformer())
+])
 
-# Build the preprocessor
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', num_transformer, num_cols),
-        ('cat', cat_transformer, cat_cols)
-    ]
-)
+categorical_pipeline = Pipeline([
+    ('imputer', SimpleImputer(strategy='most_frequent')),
+    ('encoder', OneHotEncoder(handle_unknown='ignore'))
+])
+
+preprocessor = ColumnTransformer([
+    ('num', numeric_pipeline, num_features),
+    ('cat', categorical_pipeline, cat_features)
+])
 
 # Fit the preprocessor
 preprocessor.fit(X)
