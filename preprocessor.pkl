@@ -10,9 +10,6 @@ from sklearn.impute import SimpleImputer
 # Load your full training dataset (the one used in model training)
 df = pd.read_csv("heart.csv")
 
-X = df.drop('HeartDisease', axis=1)
-y = df['HeartDisease']
-
 num_features = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
 cat_features = X.select_dtypes(include=['object']).columns.tolist()
 
@@ -26,6 +23,11 @@ def remove_outliers_iqr(data, columns, multiplier=1.5):
         upper_bound = Q3 + multiplier * IQR
         df_clean = df_clean[(df_clean[col] >= lower_bound) & (df_clean[col] <= upper_bound)]
     return df_clean
+
+df_clean = remove_outliers_iqr(df, num_features)
+X = df.drop('HeartDisease', axis=1)
+y = df['HeartDisease']
+
 numeric_pipeline = Pipeline([
     ('scaler', StandardScaler()),
     ('power', PowerTransformer())
