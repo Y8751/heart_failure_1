@@ -3,6 +3,9 @@ import joblib
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PowerTransformer
+from sklearn.impute import SimpleImputer
+
 
 # Load your full training dataset (the one used in model training)
 df = pd.read_csv("heart.csv")
@@ -37,6 +40,7 @@ preprocessor = ColumnTransformer([
     ('num', numeric_pipeline, num_features),
     ('cat', categorical_pipeline, cat_features)
 ])
-
+# Example of applying the preprocessor
+X_processed = preprocessor.fit_transform(X)
 
 
