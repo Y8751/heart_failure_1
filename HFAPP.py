@@ -12,9 +12,6 @@ from tensorflow.keras.models import load_model
 # ==============================
 try:
     preprocessor = joblib.load("preprocessor_fixed.pkl")
-except FileNotFoundError:
-    st.error("❌ Preprocessor file not found. Please ensure 'preprocessor_fixed.pkl' is in the directory.")
-    st.stop()
 except Exception as e:
     st.error(f"❌ Error loading preprocessor: {e}")
     st.stop()
@@ -36,7 +33,7 @@ try:
     with open("heart.csv", "rb") as f:
         st.download_button("📥 Download Sample CSV", f, file_name="heart.csv")
 except FileNotFoundError:
-    st.info("ℹ️ Sample CSV not found (heart.csv)")
+    st.info("ℹ️ Sample CSV (heart.csv) not found")
 
 # ==============================
 # Load Data
@@ -50,7 +47,7 @@ def load_data(file):
 # ==============================
 def preprocess_data(df):
     if 'HeartDisease' not in df.columns:
-        st.error("❌ The uploaded file does not contain the 'HeartDisease' column.")
+        st.error("❌ The uploaded file does not contain a 'HeartDisease' column.")
         st.stop()
     X = df.drop('HeartDisease', axis=1)
     y = df['HeartDisease']
@@ -63,28 +60,23 @@ def preprocess_data(df):
 def load_models():
     models = {}
     try:
-        models['XGBoost'] = joblib.load("XGBoost_model.pkl")
+        models['XGBoost'] = joblib.load("XGBoost_model_fixed.pkl")
     except Exception as e:
-        st.error(f"❌ Failed to load XGBoost_model.pkl: {e}")
-
+        st.error(f"❌ Failed to load XGBoost model: {e}")
     try:
-        models['SVM'] = joblib.load("SVM_model.pkl")
+        models['SVM'] = joblib.load("SVM_model_fixed.pkl")
     except Exception as e:
-        st.error(f"❌ Failed to load SVM_model.pkl: {e}")
-
+        st.error(f"❌ Failed to load SVM model: {e}")
     try:
-        models['Random Forest'] = joblib.load("Random_Forest_model.pkl")
+        models['Random Forest'] = joblib.load("Random_Forest_model_fixed.pkl")
     except Exception as e:
-        st.error(f"❌ Failed to load Random_Forest_model.pkl: {e}")
-
+        st.error(f"❌ Failed to load Random Forest model: {e}")
     try:
         models['Keras Neural Network'] = load_model("keras_model.h5")
     except Exception as e:
-        st.error(f"❌ Failed to load keras_model.h5: {e}")
-
+        st.error(f"❌ Failed to load Keras model: {e}")
     if not models:
         st.stop()
-
     return models
 
 # ==============================
@@ -103,21 +95,24 @@ def make_prediction(model, input_data, preprocessor):
 # ==============================
 if uploaded_file is not None:
     df = load_data(uploaded_file)
-    st.write("### 👁️‍🗨️ Data Preview", df.head())
+    st.write("### 👁️ Preview of Uploaded Data", df.head())
 
     X, y = preprocess_data(df)
     models = load_models()
 
     # Select Model
-    model_name = st.selectbox("🧠 Select a Model", list(models.keys()))
+    model_name = st.selectbox("🧠 Choose a Model", list(models.keys()))
     model = models[model_name]
 
     # Manual Input for Prediction
-    st.subheader("🔍 Enter Input Values for Prediction")
+    st.subheader("✍️ Enter Patient Data for Prediction")
     input_data = {}
     for col in X.columns:
-        input_data[col] = st.number_input(f"{col}", value=float(X[col].mean()))
-    
+        if pd.api.types.is_numeric_dtype(X[col]):
+            input_data[col] = st.number_input(f"{col}", value=float(X[col].mean()))
+        else:
+            input_data[col] = st.text_input(f"{col}", value=str(X[col].mode()[0]))
+
     if st.button("🔮 Predict Heart Disease"):
         try:
             input_df = pd.DataFrame([input_data])
@@ -127,7 +122,7 @@ if uploaded_file is not None:
             st.error(f"❌ Prediction failed: {e}")
 
     # Model Evaluation
-    st.subheader("📊 Model Evaluation on Full Dataset")
+    st.subheader("📊 Model Evaluation on Entire Dataset")
     try:
         X_processed = preprocessor.transform(X)
         if 'keras' in model_name.lower():
@@ -149,6 +144,6 @@ if uploaded_file is not None:
         ax.set_ylabel("Actual")
         st.pyplot(fig)
     except Exception as e:
-        st.error(f"❌ Evaluation failed: {e}")
+        st.error(f"❌ Error during evaluation: {e}")
 else:
-    st.info("👈 Please upload a CSV file to begin.")
+    st.info("👈 Please upload a CSV file to get started.")
