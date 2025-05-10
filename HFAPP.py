@@ -4,14 +4,20 @@ import joblib
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
-
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from tensorflow.keras.models import load_model
 
 # ==============================
-# Load Preprocessor
+# Load Preprocessor with Error Handling
 # ==============================
-preprocessor = joblib.load("preprocessor.pkl")
+try:
+    preprocessor = joblib.load("preprocessor.pkl")
+except FileNotFoundError:
+    st.error("Preprocessor file not found. Please ensure 'preprocessor.pkl' exists in the directory.")
+    st.stop()
+except Exception as e:
+    st.error(f"Error loading preprocessor: {e}")
+    st.stop()
 
 # ==============================
 # App Title
@@ -43,15 +49,22 @@ def preprocess_data(df):
     return X, y
 
 # ==============================
-# Load Models
+# Load Models with Error Handling
 # ==============================
 def load_models():
-    models = {
-        'XGBoost': joblib.load("XGBoost_model.pkl"),
-        'SVM': joblib.load("SVM_model.pkl"),
-        'Random Forest': joblib.load("Random Forest_model.pkl"),
-        'Keras Neural Network': load_model("keras_model.h5"),
-    }
+    try:
+        models = {
+            'XGBoost': joblib.load("XGBoost_model.pkl"),
+            'SVM': joblib.load("SVM_model.pkl"),
+            'Random Forest': joblib.load("Random Forest_model.pkl"),
+            'Keras Neural Network': load_model("keras_model.h5"),
+        }
+    except FileNotFoundError as e:
+        st.error(f"Model file not found: {e.filename}")
+        st.stop()
+    except Exception as e:
+        st.error(f"Error loading models: {e}")
+        st.stop()
     return models
 
 # ==============================
