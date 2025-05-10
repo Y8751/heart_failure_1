@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 
 # Load your full training dataset (the one used in model training)
-df = pd.read_csv("your_training_data.csv")
+df = pd.read_csv("heart.csv")
 
 # Split features/target
 X = df.drop('HeartDisease', axis=1)
