@@ -60,15 +60,15 @@ def preprocess_data(df):
 def load_models():
     models = {}
     try:
-        models['XGBoost'] = joblib.load("XGBoost_model_fixed.pkl")
+        models['XGBoost'] = joblib.load("XGBoost_model.pkl")
     except Exception as e:
         st.error(f"❌ Failed to load XGBoost model: {e}")
     try:
-        models['SVM'] = joblib.load("SVM_model_fixed.pkl")
+        models['SVM'] = joblib.load("SVM_model.pkl")
     except Exception as e:
         st.error(f"❌ Failed to load SVM model: {e}")
     try:
-        models['Random Forest'] = joblib.load("Random_Forest_model_fixed.pkl")
+        models['Random Forest'] = joblib.load("Random_Forest_model.pkl")
     except Exception as e:
         st.error(f"❌ Failed to load Random Forest model: {e}")
     try:
