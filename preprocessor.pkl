@@ -38,6 +38,5 @@ preprocessor = ColumnTransformer([
     ('cat', categorical_pipeline, cat_features)
 ])
 
-# Fit the preprocessor
-preprocessor.fit(X)
+
 
