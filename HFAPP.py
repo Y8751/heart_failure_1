@@ -6,6 +6,35 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from tensorflow.keras.models import load_model
+import requests
+
+# ==============================
+# دالة لتحميل الملفات من GitHub
+# ==============================
+def download_file(url, filename):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+        print(f"تم تحميل الملف: {filename}")
+    except Exception as e:
+        st.error(f"حدث خطأ أثناء تحميل الملف {filename}: {e}")
+        st.stop()
+
+# رابط raw لتحميل الملفات من GitHub
+preprocessor_url = "https://github.com/Y8751/heart_failure_1/raw/main/preprocessor.pkl"
+xgboost_model_url = "https://github.com/Y8751/heart_failure_1/raw/main/XGBoost_model.pkl"
+svm_model_url = "https://github.com/Y8751/heart_failure_1/raw/main/SVM_model.pkl"
+random_forest_model_url = "https://github.com/Y8751/heart_failure_1/raw/main/Random_Forest_model.pkl"
+keras_model_url = "https://github.com/Y8751/heart_failure_1/raw/main/keras_model.h5"
+
+# تحميل الملفات من GitHub
+download_file(preprocessor_url, "preprocessor.pkl")
+download_file(xgboost_model_url, "XGBoost_model.pkl")
+download_file(svm_model_url, "SVM_model.pkl")
+download_file(random_forest_model_url, "Random_Forest_model.pkl")
+download_file(keras_model_url, "keras_model.h5")
 
 # ==============================
 # Load Preprocessor with Error Handling
@@ -56,7 +85,7 @@ def load_models():
         models = {
             'XGBoost': joblib.load("XGBoost_model.pkl"),
             'SVM': joblib.load("SVM_model.pkl"),
-            'Random Forest': joblib.load("Random Forest_model.pkl"),
+            'Random Forest': joblib.load("Random_Forest_model.pkl"),
             'Keras Neural Network': load_model("keras_model.h5"),
         }
     except FileNotFoundError as e:
