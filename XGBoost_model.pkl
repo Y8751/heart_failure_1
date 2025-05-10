@@ -1,3 +1,0 @@
-xgb_model = XGBClassifier()
-xgb_model.fit(X_train, y_train)
-
