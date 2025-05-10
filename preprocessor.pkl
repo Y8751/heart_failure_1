@@ -1,0 +1,34 @@
+import pandas as pd
+import joblib
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.pipeline import Pipeline
+
+# Load your full training dataset (the one used in model training)
+df = pd.read_csv("your_training_data.csv")
+
+# Split features/target
+X = df.drop('HeartDisease', axis=1)
+
+# Detect column types
+num_cols = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
+cat_cols = X.select_dtypes(include=['object', 'category', 'bool']).columns.tolist()
+
+# Define preprocessing for numeric and categorical columns
+num_transformer = StandardScaler()
+cat_transformer = OneHotEncoder(handle_unknown='ignore')
+
+# Build the preprocessor
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', num_transformer, num_cols),
+        ('cat', cat_transformer, cat_cols)
+    ]
+)
+
+# Fit the preprocessor
+preprocessor.fit(X)
+
+# Save it
+joblib.dump(preprocessor, "preprocessor.pkl")
+print("✅ Saved preprocessor.pkl")
