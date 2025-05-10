@@ -1,7 +1,3 @@
-# Load your full training dataset (the one used in model training)
-df = pd.read_csv("heart.csv")
-
-# Define X and y
 X = df.drop('HeartDisease', axis=1)
 y = df['HeartDisease']
 
