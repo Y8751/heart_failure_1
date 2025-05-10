@@ -32,7 +32,7 @@ def preprocess_data(df):
 # تحميل النماذج المدربة مسبقًا
 
 def load_models():
-    model_names = ['Logistic Regression', 'KNN', 'Random Forest']  # على سبيل المثال، النماذج الأفضل بناءً على الـ recall
+    model_names = ['XGBoost', 'SVM', 'Random Forest']  # على سبيل المثال، النماذج الأفضل بناءً على الـ recall
     models = {}
     for name in model_names:
         models[name] = joblib.load(f"{name}_model.pkl")  # تأكد من المسار الصحيح للنماذج
